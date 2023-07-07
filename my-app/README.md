@@ -21,50 +21,30 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Test Description
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This test suite focuses on validating the functionality of the `MyFormComponent` within our application. The tests simulate user interaction with the form and checks whether it behaves as expected. This includes:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Checking the form submission with all fields filled correctly
+2. Submitting the form with a very long valid name
+3. Submitting the form with a complex valid email address
+4. Changing the gender from male to female and submitting the form
+5. Re-submitting the form after an initial successful submission
 
-### `npm run eject`
+We also conduct negative test cases to ensure the application responds appropriately to user errors. This includes:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Submitting the form with the 'Name' field left blank
+2. Submitting the form with an invalid email address
+3. Submitting the form without checking the 'Agree to Terms' checkbox
+4. Submitting the form without selecting a gender
+5. Submitting the form with a name that is less than 3 characters long
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Running Tests Locally
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To run these tests locally, follow these steps:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Ensure you have [Node.js](https://nodejs.org/en/download/) installed on your system.
 
-## Learn More
+2. Install the required project dependencies:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### `npm install`
