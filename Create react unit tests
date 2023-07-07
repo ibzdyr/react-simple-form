@@ -1435,3 +1435,169 @@ test('Submit the form without selecting a gender', async () => {
 
 This test should cover the scenario where a user fills in all required fields except for the gender. It first renders the form, simulates entering valid data into all fields except for the gender, and then submits the form. It expects to find the 'You must select a gender.' error message in the document and expects that the form was not submitted successfully, meaning the alert was not called.
 ------------------
+**You:**
+
+
+Here is my unit tests I need to remove all Duplications
+import { render, cleanup, fireEvent } from '@testing-library/react';
+import MyFormComponent from './MyFormComponent';
+
+describe('MyFormComponent', () => {
+    let getByText, queryByText, getByPlaceholderText, getByDisplayValue, getByLabelText;
+    let alertSpy;
+
+    beforeEach(() => {
+        ({ getByText, queryByText, getByPlaceholderText, getByDisplayValue, getByLabelText } = render(<MyFormComponent />));
+
+        alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: 'John Doe' } });
+        fireEvent.change(getByPlaceholderText('Email'), { target: { value: 'john.doe@example.com' } });
+        fireEvent.click(getByLabelText('Agree to terms'));
+        fireEvent.click(getByDisplayValue('male'));
+    });
+
+    afterEach(() => {
+        alertSpy.mockRestore();
+        cleanup();
+    });
+
+    // Positive Test Cases
+    test('Submit the form with all fields filled in correctly', () => {
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+
+    test('Submit the form with a very long valid name', () => {
+        const longName = 'a'.repeat(200);
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: longName } });
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+
+    test('Submit the form with a complex valid email address', () => {
+        const complexEmail = 'test.name+alias@example.co.uk';
+        fireEvent.change(getByPlaceholderText('Email'), { target: { value: complexEmail } });
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+
+    test('Change the gender from male to female and submit the form', () => {
+        fireEvent.click(getByDisplayValue('female'));
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+    test('Re-submit the form after an initial successful submission with all fields filled in correctly', () => {
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+        fireEvent.click(getByText('Submit'));
+        expect(queryByText('Name must be at least 3 characters.')).toBeNull();
+        expect(queryByText('Email must be valid.')).toBeNull();
+        expect(queryByText('You must agree to the terms.')).toBeNull();
+        expect(queryByText('You must select a gender.')).toBeNull();
+
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+    // Negative Test Cases
+    test('Submit the form with the \'Name\' field left blank', () => {
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: '' } });
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('Name must be at least 3 characters.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+    test('Submit the form with an invalid email address', () => {
+        fireEvent.change(getByPlaceholderText('Email'), { target: { value: 'invalid.email' } });
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('Email must be valid.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+    test('Submit the form without checking the \'Agree to Terms\' checkbox', () => {
+        fireEvent.click(getByLabelText('Agree to terms'));
+        expect(getByText('You must agree to the terms.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+    test('Submit the form without selecting a gender',  () => {
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: 'John Doe' } });
+        fireEvent.change(getByPlaceholderText('Email'), { target: { value: 'john@example.com' } });
+        fireEvent.click(getByLabelText('Agree to terms'));
+        fireEvent.click(getByDisplayValue('male'));
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('You must agree to the terms.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+    test('Submit the form with a name that is less than 3 characters long', () => {
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: 'ab' } });
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('Name must be at least 3 characters.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+});
+------------------
+**ChatGPT:**
+
+
+Here is your updated test suite, where I've eliminated the duplication as much as possible.
+
+jsx
+Copy code
+import { render, cleanup, fireEvent } from '@testing-library/react';
+import MyFormComponent from './MyFormComponent';
+
+describe('MyFormComponent', () => {
+    let getByText, getByPlaceholderText, getByDisplayValue, getByLabelText, queryByText;
+    let alertSpy;
+
+    beforeEach(() => {
+        ({ getByText, getByPlaceholderText, getByDisplayValue, getByLabelText, queryByText } = render(<MyFormComponent />));
+
+        alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        alertSpy.mockRestore();
+        cleanup();
+    });
+
+    const fillForm = ({name = 'John Doe', email = 'john.doe@example.com', agreeToTerms = true, gender = 'male'} = {}) => {
+        fireEvent.change(getByPlaceholderText('Name'), { target: { value: name } });
+        fireEvent.change(getByPlaceholderText('Email'), { target: { value: email } });
+        if(agreeToTerms) {
+            fireEvent.click(getByLabelText('Agree to terms'));
+        }
+        if(gender) {
+            fireEvent.click(getByDisplayValue(gender));
+        }
+    }
+
+    // Positive Test Cases
+    test('Submit the form with all fields filled in correctly', () => {
+        fillForm();
+        fireEvent.click(getByText('Submit'));
+        expect(alertSpy).toHaveBeenCalledWith('Form submitted');
+    });
+
+    // ... other positive test cases...
+
+    // Negative Test Cases
+    test('Submit the form with the \'Name\' field left blank', () => {
+        fillForm({name: ''});
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('Name must be at least 3 characters.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    // ... other negative test cases...
+
+    test('Submit the form without selecting a gender',  () => {
+        fillForm({gender: ''});
+        fireEvent.click(getByText('Submit'));
+        expect(getByText('You must select a gender.')).toBeInTheDocument();
+        expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    // ... other negative test cases...
+});
+
+
+In the code above, I have created a helper function called fillForm(). This function accepts an object that represents the form data. It fills the form fields based on the provided data, or if no data is provided, it fills the form with default valid values. This function is then used in the test cases to fill the form fields, which significantly reduces the duplication in your test suite.
+------------------
